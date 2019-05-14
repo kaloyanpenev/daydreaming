@@ -1,0 +1,4 @@
+﻿  Cursor.cpp
+c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\cursor.cpp(58): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\cursor.cpp(82): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  SDLProject.vcxproj -> C:\Users\wildshadow\source\repos\SDLProject\SDLProject\Debug\SDLProject.exe
