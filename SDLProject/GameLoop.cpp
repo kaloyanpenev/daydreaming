@@ -3,7 +3,6 @@
 
 GameLoop::GameLoop()
 {
-
 }
 
 
@@ -13,42 +12,64 @@ GameLoop::~GameLoop()
 
 void GameLoop::RunGame()
 {
+	srand(unsigned(time(NULL)));
 	if (!InitializeSDL())
 		std::cout << "Error loading SDL: " << SDL_GetError() << std::endl;
-	Player* littleman = new Player(window, renderer, "littleman.bmp", 1280/2, 720/2, 100, 100, 5);
-	Cursor* mouse = new Cursor(window, renderer, "xh.png", 0, 0, 16, 16);
+
+	Timer* time = new Timer();
+	float playerMS = 1;
+	Player* littleman = new Player(window, renderer, "assets/shootAnim1x4.png", 500, 500, 64, 64, 1, 4, 5, playerMS);
+	Cursor* mouse = new Cursor(window, renderer, "assets/xh.png", 0, 0, 16, 16);
+	AnimationSprite* explosion = new AnimationSprite(window, renderer, "assets/explosion.png", 100, 100, 100, 100, 9, 9, 1, true);
+	Enemy* enemy = new Enemy(window, renderer, "assets/littleman.bmp", 200, 200, 100, 100);
 
 	SDL_Event e;
-	bool quit = false;
+	bool exitFlag= false;
 
 
-	while (!quit)
+	while (!exitFlag)
 	{
+		time->Update();
 		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
 			//User requests quit
 			if (e.type == SDL_QUIT)
 			{
-				quit = true;
+				exitFlag = true;
 			}
 		}
 		//Clear screen
-		SDL_RenderClear(renderer);
+		if (time->getDeltaTime() >= 1.0f / FRAME_RATE)
+		{
+			SDL_RenderClear(renderer);
+
+			enemy->Update(10 * time->getDeltaTime());
+
+			enemy->Draw();
+
+			littleman->Move();
+			littleman->HandleShooting();
+			littleman->ShootAnimation();
+			float anglePlayer = mouse->getAngleBetweenMouseAndRect(littleman->getPosition());
+			littleman->Draw(90 + anglePlayer);
+
+			mouse->MouseLook(&e);
+			mouse->DrawLineMouseToSprite(littleman);
+			mouse->Draw();
+
+			explosion->Animate();
+			explosion->Draw();
 
 
-		mouse->MouseLook(&e);
-		mouse->Draw();
-		littleman->Move();
-		float angle = mouse->getAngleBetweenMouseAndRect(littleman->getPosition());
-		littleman->Draw(90 + angle);
-		mouse->DrawLineMouseToSprite(littleman);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-
-
-
-		SDL_RenderPresent(renderer);
+			std::cout << time->getDeltaTime() << std::endl;
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderPresent(renderer);
+			time->reset();
+		}
 	}
+	delete enemy;
+	delete explosion;
 	delete littleman;
 	delete mouse;
 	CloseSDL();

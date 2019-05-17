@@ -1,1 +1,5 @@
-﻿  SDLProject.vcxproj -> C:\Users\wildshadow\source\repos\SDLProject\SDLProject\Debug\SDLProject.exe
+﻿  Enemy.cpp
+c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\enemy.cpp(32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\enemy.cpp(33): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\enemy.cpp(34): warning C4305: '+=': truncation from 'double' to 'float'
+  SDLProject.vcxproj -> C:\Users\wildshadow\source\repos\SDLProject\SDLProject\Debug\SDLProject.exe

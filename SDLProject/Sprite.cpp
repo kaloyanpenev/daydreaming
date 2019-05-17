@@ -5,7 +5,7 @@
 Sprite::Sprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h)
 {
 	SDL_Surface* imageFile = IMG_Load(_file);
-	image = SDL_CreateTextureFromSurface(_renderer, imageFile);
+	texture = SDL_CreateTextureFromSurface(_renderer, imageFile);
 	SDL_FreeSurface(imageFile);
 
 	position.x = _x;
@@ -15,20 +15,24 @@ Sprite::Sprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, 
 
 	window = _window;
 	renderer = _renderer;
-
+	dead = false;
 }
 
 
 Sprite::~Sprite()
 {
-	if (image)
-		SDL_DestroyTexture(image);
+	if (texture)
+		SDL_DestroyTexture(texture);
+}
+bool Sprite::GetLiveState()
+{
+	return dead;
 }
 
 void Sprite::Draw()
 {
-	if (image)
-		SDL_RenderCopy(renderer, image, NULL, &position);
+	if (texture)
+		SDL_RenderCopy(renderer, texture, NULL, &position);
 }
 SDL_Rect Sprite::getPosition()
 {
@@ -40,4 +44,23 @@ void Sprite::setPosition(SDL_Rect _rect)
 	position.y = _rect.y;
 	position.w = _rect.w;
 	position.h = _rect.h;
+}
+void Sprite::BoundToScreen()
+{
+	if (position.x <= 0)
+	{
+		position.x = 0;
+	}
+	if (position.y <= 0)
+	{
+		position.y = 0;
+	}
+	if (position.x >= 1280 - position.w)
+	{
+		position.x = 1280 - position.w;
+	}
+	if (position.y >= 720 - position.h)
+	{
+		position.y = 720 - position.h;
+	}
 }

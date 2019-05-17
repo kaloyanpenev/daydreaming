@@ -9,13 +9,14 @@ class Cursor :
 private:
 	bool usingLastPos = false;
 	SDL_Point lastPos;
+	int MouseX, MouseY;
 public:
 	Cursor(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h);
 	~Cursor();
-	void Draw();
+	void Draw() override;
 	void MouseLook(SDL_Event* e);
 	float getAngle(int x1, int y1, int x2, int y2);
 	float getAngleBetweenMouseAndRect(SDL_Rect _rect);
-	void DrawLineMouseToSprite(Sprite* sprite);
+	void DrawLineMouseToSprite(Sprite* _sprite);
 };
 
