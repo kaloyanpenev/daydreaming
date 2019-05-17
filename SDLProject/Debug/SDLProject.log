@@ -1,4 +1,0 @@
-﻿  GameLoop.cpp
-c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\gameloop.cpp(20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\wildshadow\source\repos\sdlproject\sdlproject\sdlproject\gameloop.cpp(71): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  SDLProject.vcxproj -> C:\Users\wildshadow\source\repos\SDLProject\SDLProject\Debug\SDLProject.exe
