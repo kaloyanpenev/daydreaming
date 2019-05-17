@@ -18,6 +18,7 @@ AnimationSprite::AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, c
 	speed = _speed;
 	loop = _loop;
 	timer = 0;
+	canRestart = false;
 }
 
 
@@ -42,12 +43,22 @@ void AnimationSprite::Animate()
 			//if reached max rows
 			if (currentRow == totalRows)
 			{
-				if (loop = true)
+				if (loop)
 					currentRow = 0;
 				else
+				{
 					dead = true;
+					canRestart = true;
+				}
 			}
 		}
+	}
+	if (canRestart && !dead)
+	{
+		currentRow = 0;
+		currentColumn = 0;
+		timer = 0;
+		canRestart = false;
 	}
 }
 

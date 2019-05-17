@@ -2,7 +2,10 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <iostream>
 #include <string>
+#include <vector>
+#include "Vector2.h"
 
 class Sprite
 {
@@ -15,10 +18,11 @@ protected:
 public:
 	Sprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h);
 	~Sprite();
-	inline bool GetLiveState();
-
+	bool GetDead();
+	void SetDead(bool _dead);
 	SDL_Rect getPosition();
-	void setPosition(SDL_Rect);
+	void setObject(SDL_Rect);
+	void setPosition(int _x, int _y);
 	virtual void Draw();
 	void BoundToScreen();
 };

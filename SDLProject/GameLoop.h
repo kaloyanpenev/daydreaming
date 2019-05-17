@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <iostream>
+#include <ctime>
 #include <stdio.h>
 #include "Sprite.h"
 #include "Player.h"
@@ -9,7 +10,7 @@
 #include "AnimationSprite.h"
 #include "Enemy.h"
 #include "Timer.h"
-#include <ctime>
+#include "Spawner.h"
 #include <vector>
 
 

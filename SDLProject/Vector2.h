@@ -9,7 +9,7 @@ struct Vector2 {
 		x(_x), y(_y) {}
 	float magnitude()
 	{
-		return (float)sqrt(x*x + y * y);
+		return (float)sqrt(x * x + y * y);
 	}
 	Vector2 normalized()
 	{

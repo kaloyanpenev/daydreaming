@@ -24,9 +24,13 @@ Sprite::~Sprite()
 	if (texture)
 		SDL_DestroyTexture(texture);
 }
-bool Sprite::GetLiveState()
+bool Sprite::GetDead()
 {
 	return dead;
+}
+void Sprite::SetDead(bool _dead)
+{
+	dead = _dead;
 }
 
 void Sprite::Draw()
@@ -38,12 +42,17 @@ SDL_Rect Sprite::getPosition()
 {
 	return position;
 }
-void Sprite::setPosition(SDL_Rect _rect)
+void Sprite::setObject(SDL_Rect _rect)
 {
 	position.x = _rect.x;
 	position.y = _rect.y;
 	position.w = _rect.w;
 	position.h = _rect.h;
+}
+void Sprite::setPosition(int _x, int _y)
+{
+	position.x = _x;
+	position.y = _y;
 }
 void Sprite::BoundToScreen()
 {
