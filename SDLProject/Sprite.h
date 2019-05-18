@@ -14,16 +14,18 @@ protected:
 	SDL_Renderer* renderer = nullptr;;
 	SDL_Texture* texture = nullptr;
 	SDL_Rect position;
-	bool dead;
+	bool active;
 public:
 	Sprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h);
 	~Sprite();
-	bool GetDead();
-	void SetDead(bool _dead);
-	SDL_Rect getPosition();
+	bool getActive();
+	void setActive(bool _state);
 	void setObject(SDL_Rect);
+	SDL_Rect getObject();
 	void setPosition(int _x, int _y);
+	void setPosition(Vector2 _pos);
+	Vector2 getPosition();
 	virtual void Draw();
-	void BoundToScreen();
+	void BoundToScreen(int _screenWidth, int _screenHeight);
 };
 

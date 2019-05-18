@@ -18,7 +18,7 @@ Enemy::~Enemy()
 }
 
 
-void Enemy::Update(int _smoothness, float _enemySpeed)
+void Enemy::Update(int _smoothness, float _enemySpeed, int _screenWidth, int _screenHeight)
 {
 	Vector2 positionVec{ float(position.x), float(position.y) };
 
@@ -29,8 +29,8 @@ void Enemy::Update(int _smoothness, float _enemySpeed)
 		if (distance.magnitude() > position.w) //if the distance to the waypoint is still bigger than our object's width(as a placeholder value for size(64x64), as to not get stuck at the extremities of the window)
 		{
 			Vector2 resultPos = lerp(positionVec, waypoints.at(currentWaypoint), step); //lerp towards it
-			position.x = resultPos.x; //assign resultpos to position rect
-			position.y = resultPos.y;
+			position.x = int(resultPos.x); //assign resultpos to position rect
+			position.y = int(resultPos.y);
 			step += _enemySpeed;
 			updateTimer = 0;
 		}
@@ -43,13 +43,13 @@ void Enemy::Update(int _smoothness, float _enemySpeed)
 			//this way our vector doesn't grow, however we can access the next 3 waypoints(for more complicated enemy AI in future iterations)
 		}
 	}
-	BoundToScreen();
+	BoundToScreen(_screenWidth, _screenHeight);
 }
 
-void Enemy::InitializeWaypoints(int waypointCount)
+void Enemy::InitializeWaypoints(int waypointCount, int _screenWidth, int _screenHeight)
 {
 	for(int i = 0; i < waypointCount; i++)
-		waypoints.push_back({ float(rand() % 1280), float(rand() % 720) });
+		waypoints.push_back({ float(rand() % _screenWidth), float(rand() % _screenHeight) });
 }
 
 //void Enemy::SpawnEnemies(int _timer, int _enemyCount, std::vector<Enemy*>& enemies)

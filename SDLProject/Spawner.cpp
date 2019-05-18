@@ -2,7 +2,7 @@
 
 
 
-Spawner::Spawner(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, float _speed, bool _loop) :
+Spawner::Spawner(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, int _speed, bool _loop) :
 	AnimationSprite(_window, _renderer, _file, _x, _y, _w, _h, _totalRows, _totalColumns, _speed, _loop)
 {
 	spawnTimer = 0;

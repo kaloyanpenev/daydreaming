@@ -6,11 +6,13 @@
 #include <stdio.h>
 #include "Sprite.h"
 #include "Player.h"
+#include "Bullet.h"
 #include "Cursor.h"
 #include "AnimationSprite.h"
 #include "Enemy.h"
 #include "Timer.h"
 #include "Spawner.h"
+#include "Vector2.h"
 #include <vector>
 
 

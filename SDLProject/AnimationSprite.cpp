@@ -2,7 +2,7 @@
 
 
 
-AnimationSprite::AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, float _speed, bool _loop) :
+AnimationSprite::AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, int _speed, bool _loop) :
 	Sprite(_window, _renderer, _file, _x, _y, _w, _h)
 {
 	currentRow = 0;
@@ -47,13 +47,13 @@ void AnimationSprite::Animate()
 					currentRow = 0;
 				else
 				{
-					dead = true;
+					active = false;
 					canRestart = true;
 				}
 			}
 		}
 	}
-	if (canRestart && !dead)
+	if (canRestart && active)
 	{
 		currentRow = 0;
 		currentColumn = 0;

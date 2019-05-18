@@ -5,7 +5,7 @@ Cursor::Cursor(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, 
 	Sprite(_window, _renderer, _file, _x, _y, _w, _h)
 {
 	SDL_ShowCursor(0);
-	SDL_WarpMouseInWindow(NULL, 1280 / 2, 720 / 2);
+	//SDL_WarpMouseInWindow(NULL, 1280 / 2, 720 / 2);
 }
 
 
@@ -86,9 +86,9 @@ float Cursor::getAngleBetweenMouseAndRect(SDL_Rect _rect)
 }
 void Cursor::DrawLineMouseToSprite(Sprite* _sprite)
 {
-	int x = _sprite->getPosition().x + _sprite->getPosition().w/2;
-	int y = _sprite->getPosition().y + _sprite->getPosition().h/2;
-	SDL_SetRenderDrawColor(renderer, 255, 120, 120, 50);
+	int x = _sprite->getObject().x + _sprite->getObject().w/2;
+	int y = _sprite->getObject().y + _sprite->getObject().h/2;
+	SDL_SetRenderDrawColor(renderer, 255, 120, 120, 150);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_RenderDrawLine(renderer, MouseX, MouseY, x, y);
 }

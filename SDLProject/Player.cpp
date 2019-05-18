@@ -2,17 +2,19 @@
 
 
 
-Player::Player(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalAnimRows, int _totalAnimColumns, float _animSpeed, int _moveSpeed) :
+Player::Player(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalAnimRows, int _totalAnimColumns, int _animSpeed, int _moveSpeed) :
 	AnimationSprite(_window, _renderer, _file, _x, _y, _w, _h, _totalAnimRows, _totalAnimColumns, _animSpeed, true), moveSpeed(_moveSpeed)
 {
 	shooting = false;
+	reloadTimer = 0;
+	playShootAnimation = false;
 }
 
 
 Player::~Player()
 {
 }
-void Player::Move()
+void Player::Move(int _screenWidth, int _screenHeight)
 {
 	movetimer++;
 	if (movetimer == moveSpeed)
@@ -34,7 +36,7 @@ void Player::Move()
 		{
 			position.y += 5;
 		}
-		BoundToScreen();
+		BoundToScreen(_screenWidth, _screenHeight);
 		
 		movetimer = 0;
 	}
@@ -49,30 +51,47 @@ void Player::Draw(float angle)
 	}
 }
 
-void Player::HandleShooting()
+void Player::HandleShooting(int _reloadTime)
 {
-	if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_LMASK) //if left button is clicked
+	reloadTimer++;
+	if (reloadTimer > _reloadTime)
 	{
-		shooting = true;
+		if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_LMASK) //if left button is clicked and reloadtimer == reloadtime
+		{
+			shooting = true;
+			reloadTimer = 0;
+		}
 	}
+	else
+		return;
 }
 
 void Player::ShootAnimation()
 {
 	if (shooting)
+		playShootAnimation = true;
+	if (playShootAnimation)
 	{
 		timer++;
+		//if time to proceed to next animation sprite is right
 		if (timer == speed)
 		{
 			timer = 0;
-			//if time to proceed to next animation sprite is right
 			currentColumn++; //go to next column
 				//if reached max columns
 			if (currentColumn == totalColumns)
 			{
 				currentColumn = 0; // go back to col 0
-				shooting = false;
+				playShootAnimation = false;
 			}
 		}
 	}
+}
+void Player::setShooting(bool _state)
+{
+	shooting = _state;
+}
+bool Player::getShooting()
+{
+	return shooting;
 }

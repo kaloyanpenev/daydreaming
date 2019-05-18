@@ -11,11 +11,11 @@ protected:
 	int currentColumn;
 	
 	int timer;
-	float speed;
+	int speed;
 	bool loop;
 	bool canRestart;
 public:
-	AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, float _speed, bool _loop);
+	AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, int _speed, bool _loop);
 	virtual void Animate();
 	void Draw() override;
 	~AnimationSprite();

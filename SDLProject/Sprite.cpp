@@ -15,7 +15,7 @@ Sprite::Sprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, 
 
 	window = _window;
 	renderer = _renderer;
-	dead = false;
+	active = true;
 }
 
 
@@ -24,13 +24,13 @@ Sprite::~Sprite()
 	if (texture)
 		SDL_DestroyTexture(texture);
 }
-bool Sprite::GetDead()
+bool Sprite::getActive()
 {
-	return dead;
+	return active;
 }
-void Sprite::SetDead(bool _dead)
+void Sprite::setActive(bool _state)
 {
-	dead = _dead;
+	active = _state;
 }
 
 void Sprite::Draw()
@@ -38,9 +38,19 @@ void Sprite::Draw()
 	if (texture)
 		SDL_RenderCopy(renderer, texture, NULL, &position);
 }
-SDL_Rect Sprite::getPosition()
+void Sprite::setPosition(Vector2 _pos)
 {
-	return position;
+	position.x = int(_pos.x);
+	position.y = int(_pos.y);
+}
+void Sprite::setPosition(int _x, int _y)
+{
+	position.x = _x;
+	position.y = _y;
+}
+Vector2 Sprite::getPosition()
+{
+	return { float(position.x), float(position.y) };
 }
 void Sprite::setObject(SDL_Rect _rect)
 {
@@ -49,12 +59,11 @@ void Sprite::setObject(SDL_Rect _rect)
 	position.w = _rect.w;
 	position.h = _rect.h;
 }
-void Sprite::setPosition(int _x, int _y)
+SDL_Rect Sprite::getObject()
 {
-	position.x = _x;
-	position.y = _y;
+	return position;
 }
-void Sprite::BoundToScreen()
+void Sprite::BoundToScreen(int _screenWidth, int _screenHeight)
 {
 	if (position.x <= 0)
 	{
@@ -64,12 +73,12 @@ void Sprite::BoundToScreen()
 	{
 		position.y = 0;
 	}
-	if (position.x >= 1280 - position.w)
+	if (position.x >= _screenWidth - position.w)
 	{
-		position.x = 1280 - position.w;
+		position.x = _screenWidth - position.w;
 	}
-	if (position.y >= 720 - position.h)
+	if (position.y >= _screenHeight - position.h)
 	{
-		position.y = 720 - position.h;
+		position.y = _screenHeight - position.h;
 	}
 }

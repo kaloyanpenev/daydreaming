@@ -35,7 +35,7 @@ inline bool operator !=(const Vector2& left, const Vector2& right)
 	return left.x != right.x && left.y != right.y ? true : false;
 }
 
-inline Vector2 lerp(Vector2& start, Vector2& target, float time)
+inline Vector2 lerp(const Vector2& start, const Vector2& target, float time)
 {
 	Vector2 direction{ (target - start).normalized() };
 	float magnitude{ (target - start).magnitude() };
