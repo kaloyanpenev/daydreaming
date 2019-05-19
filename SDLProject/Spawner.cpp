@@ -21,8 +21,8 @@ void Spawner::setSpawners(int _spawnerCount)
 	{
 		for (int i = 0; i < _spawnerCount; i++)
 		{
-			m_spawnPoints.push_back({ float(rand() % 1216), float(rand() % 656) }); //set spawnpoints at random, 1216= 1280-64 and 656 = 720-64 
-			std::cout << "\nCurrent SpawnPoint: " << m_spawnPoints.at(i).x << "," << m_spawnPoints.at(i).y;
+			//set spawnpoints at random, 1216= 1280-64-1 and 656 = 720-64-1 so that enemies don't get stuck at the extremities of the window
+			m_spawnPoints.push_back({ float(rand() % 1215), float(rand() % 655) });
 		}
 		m_spawning = false;
 	}

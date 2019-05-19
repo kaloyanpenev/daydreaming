@@ -14,7 +14,7 @@ private:
 public:
 	TextSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _fontFile, int _x, int _y, int _w, int _h, int _fontSize, std::string _message, SDL_Color _color);
 	~TextSprite();
-	void UpdateFont(std::string _message);
+	void Update(std::string _message);
 	void CloseFont();
 };
 

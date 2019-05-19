@@ -16,7 +16,7 @@ TextSprite::~TextSprite()
 	TTF_CloseFont(m_font);
 	m_font = nullptr;
 }
-void TextSprite::UpdateFont(std::string _message)
+void TextSprite::Update(std::string _message)
 {
 	SDL_Surface* fontSurface = TTF_RenderText_Solid(m_font, _message.c_str(), m_color);
 	position.w = fontSurface->w;

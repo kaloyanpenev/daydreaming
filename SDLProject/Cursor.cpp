@@ -14,6 +14,7 @@ Cursor::Cursor(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, 
 
 Cursor::~Cursor()
 {
+	SDL_ShowCursor(1);
 }
 
 void Cursor::Draw()

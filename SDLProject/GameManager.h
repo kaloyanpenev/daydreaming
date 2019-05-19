@@ -23,7 +23,7 @@
 
 
 
-class GameLoop
+class GameManager
 {
 private:
 	int SCREEN_WIDTH;
@@ -32,17 +32,30 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Surface* screenSurface = nullptr;
+	bool m_restartFlag;
+	bool m_gameExitFlag;
+	bool m_winFlag;
+	int m_score;
 
 	//sounds
-	Mix_Music* musicTrack = nullptr;
-	Mix_Chunk* deathSFX = nullptr;
+	Mix_Music* m_musicTrack = nullptr;
+	Mix_Chunk* m_enemySFX = nullptr;
+	Mix_Chunk* m_playerDeathSFX = nullptr;
+	Mix_Chunk* m_shootSFX = nullptr;
 
 public:
-	GameLoop(int _screenWidth, int _screenHeight);
-	~GameLoop();
+	GameManager(int _screenWidth, int _screenHeight);
+	~GameManager();
 	bool InitializeSDL();
 	void CloseSDL();
 	void RunGame();
+	void LoadMusic();
+	void CloseMusic();
+	bool Menu();
+	void RestartScreen();
+	void GameLoop();
+	bool MouseOverButton(SDL_Rect _button, const int _mouseX, const int _mouseY);
+	void ToggleMusic(SDL_Event* _e);
 };
 
 #endif
