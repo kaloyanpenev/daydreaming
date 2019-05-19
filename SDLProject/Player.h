@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _PLAYER_H_
+#define _PLAYER_H_
 #include "AnimationSprite.h"
 //#include "Cursor.h"
 
@@ -6,11 +7,11 @@ class Player :
 	public AnimationSprite
 {
 private:
-	int moveSpeed;
-	bool shooting;
-	float movetimer;
-	int reloadTimer;
-	bool playShootAnimation;
+	int m_moveSpeed;
+	bool m_shooting;
+	float m_movetimer;
+	int m_reloadTimer;
+	bool m_playShootAnimation;
 public:
 	Player(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalAnimRows, int _totalAnimColumns, int _animSpeed, int _moveSpeed);
 	~Player();
@@ -18,7 +19,8 @@ public:
 	void ShootAnimation();
 	void Move(int _screenWidth, int _screenHeight);
 	void Draw(float angle);
-	bool getShooting();
-	void setShooting(bool _state);
+	bool getShooting() const { return m_shooting; }
+	void setShooting(bool _state) { m_shooting = _state; }
 };
 
+#endif

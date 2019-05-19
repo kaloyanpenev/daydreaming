@@ -44,16 +44,18 @@ void AnimationSprite::Animate()
 			if (currentRow == totalRows)
 			{
 				if (loop)
+				{
 					currentRow = 0;
+				}
 				else
 				{
-					active = false;
+					m_active = false;
 					canRestart = true;
 				}
 			}
 		}
 	}
-	if (canRestart && active)
+	if (canRestart && m_active)
 	{
 		currentRow = 0;
 		currentColumn = 0;
@@ -67,5 +69,7 @@ void AnimationSprite::Draw()
 	animRect.x = currentColumn * animRect.w;
 	animRect.y = currentRow * animRect.h;
 	if (texture)
+	{
 		SDL_RenderCopy(renderer, texture, &animRect, &position);
+	}
 }

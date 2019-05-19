@@ -1,5 +1,12 @@
-#pragma once
+
+#ifndef _ANIMATIONSPRITE_H_
+#define _ANIMATIONSPRITE_H_
+
 #include "Sprite.h"
+
+
+///Some parts of this function were written by following:-
+///Pete Allen, 2019, Bournemouth University, Sprites Guide 
 class AnimationSprite :
 	public Sprite
 {
@@ -21,3 +28,4 @@ public:
 	~AnimationSprite();
 };
 
+#endif _ANIMATIONSPRITE_H_

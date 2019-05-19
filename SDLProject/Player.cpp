@@ -3,11 +3,11 @@
 
 
 Player::Player(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalAnimRows, int _totalAnimColumns, int _animSpeed, int _moveSpeed) :
-	AnimationSprite(_window, _renderer, _file, _x, _y, _w, _h, _totalAnimRows, _totalAnimColumns, _animSpeed, true), moveSpeed(_moveSpeed)
+	AnimationSprite(_window, _renderer, _file, _x, _y, _w, _h, _totalAnimRows, _totalAnimColumns, _animSpeed, true), m_moveSpeed(_moveSpeed)
 {
-	shooting = false;
-	reloadTimer = 0;
-	playShootAnimation = false;
+	m_shooting = false;
+	m_reloadTimer = 0;
+	m_playShootAnimation = false;
 }
 
 
@@ -16,8 +16,8 @@ Player::~Player()
 }
 void Player::Move(int _screenWidth, int _screenHeight)
 {
-	movetimer++;
-	if (movetimer == moveSpeed)
+	m_movetimer++;
+	if (m_movetimer == m_moveSpeed)
 	{
 		const Uint8* key = SDL_GetKeyboardState(NULL);
 		if (key[SDL_SCANCODE_A]) //moving left
@@ -38,7 +38,7 @@ void Player::Move(int _screenWidth, int _screenHeight)
 		}
 		BoundToScreen(_screenWidth, _screenHeight);
 		
-		movetimer = 0;
+		m_movetimer = 0;
 	}
 }
 void Player::Draw(float angle)
@@ -53,24 +53,24 @@ void Player::Draw(float angle)
 
 void Player::HandleShooting(int _reloadTime)
 {
-	reloadTimer++;
-	if (reloadTimer > _reloadTime)
+	m_reloadTimer++;
+	if (m_reloadTimer > _reloadTime)
 	{
 		if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_LMASK) //if left button is clicked and reloadtimer == reloadtime
 		{
-			shooting = true;
-			reloadTimer = 0;
+			m_shooting = true;
+			m_reloadTimer = 0;
 		}
 	}
-	else
-		return;
 }
 
 void Player::ShootAnimation()
 {
-	if (shooting)
-		playShootAnimation = true;
-	if (playShootAnimation)
+	if (m_shooting)
+	{
+		m_playShootAnimation = true;
+	}
+	if (m_playShootAnimation)
 	{
 		timer++;
 		//if time to proceed to next animation sprite is right
@@ -82,16 +82,8 @@ void Player::ShootAnimation()
 			if (currentColumn == totalColumns)
 			{
 				currentColumn = 0; // go back to col 0
-				playShootAnimation = false;
+				m_playShootAnimation = false;
 			}
 		}
 	}
-}
-void Player::setShooting(bool _state)
-{
-	shooting = _state;
-}
-bool Player::getShooting()
-{
-	return shooting;
 }
