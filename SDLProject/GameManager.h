@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <fstream>
 #include <stdio.h>
 #include <sstream>
 #include <SDL.h>

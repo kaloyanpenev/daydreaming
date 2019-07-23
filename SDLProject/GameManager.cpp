@@ -23,16 +23,20 @@ void GameManager::RunGame()
 	}
 	else
 	{
-		while (!m_gameExitFlag)
+		while (!m_gameExitFlag) //while game is being played
 		{
+			//initialize menu screen, 
+			//Menu() returns true if the Play button is clicked 
+			//and false if the game is closed .
 			bool menuFlag = Menu();
-			if (menuFlag)
+			if (menuFlag) //if Menu is successfully initialized
 			{
-				GameLoop();
+				GameLoop(); //run gameLoop
 			}
-			if (m_restartFlag && menuFlag)
+			if (m_restartFlag && menuFlag) //check if player is dead, send to restart screen, check for menuFlag to avoid a bug
 			{
 				RestartScreen();
+				m_score = 0;
 			}
 		}
 	}
@@ -458,7 +462,7 @@ void GameManager::GameLoop()
 				enemy->Update(2, time->getDeltaTime() * 0.05f, SCREEN_WIDTH, SCREEN_HEIGHT); //update our enemies
 				enemy->Draw(); //draw it
 
-				if (SDL_HasIntersection(&player->getObject(), &enemy->getObject())) //check for player and enemy collision
+				if (SDL_HasIntersection(&player->getObject(), &enemy->getObject())) //check for player and enemy collision(if player is dead/died/dying)
 				{
 					Mix_PlayChannel(-1, m_playerDeathSFX, 0);
 					player->setActive(false); //if there is, set player inactive
