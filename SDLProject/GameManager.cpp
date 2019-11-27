@@ -82,7 +82,7 @@ bool GameManager::InitializeSDL()
 			std::cout << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError();
 			success = false;
 		}
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		if (renderer == NULL)
 		{
 			std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
@@ -96,6 +96,7 @@ bool GameManager::InitializeSDL()
 	// load music and play music track
 	LoadMusic();
 	Mix_PlayMusic(m_musicTrack, -1);
+	Mix_VolumeMusic(MIX_MAX_VOLUME / 4);
 
 	return success;
 }
@@ -146,12 +147,26 @@ bool GameManager::Menu()
 	auto playButton = std::make_unique<Sprite>(window, renderer, "assets/playbutton.png", SCREEN_WIDTH/2 - 256, SCREEN_HEIGHT/2 - 64, 512, 128);
 	auto quitButton = std::make_unique<Sprite>(window, renderer, "assets/quitbutton.png", playButton->getObject().x + 64, playButton->getObject().y + playButton->getObject().h + 32, 384, 96);
 
+	SDL_Color textColor = { 0, 0, 0, 0xFF };
+	std::string inputText = "Some Text";
+	auto InputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 20, 20, 50, 50, 16, inputText, textColor);
+
+	InputTextBox->Update(inputText.c_str());
+
+	//The current input text.
+
+	//Enable text input
+	SDL_StartTextInput();
+
+
 	SDL_Event e;
 	//exit flag
 	bool exitFlag = false;
 	//menu loop, will run until the exit flag breaks it
 	while (!exitFlag)
 	{
+		bool renderText = false;
+
 		//poll events
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -162,14 +177,27 @@ bool GameManager::Menu()
 				m_gameExitFlag = true;
 			}
 			ToggleMusic(&e);
+
+			if (e.type == SDL_TEXTINPUT)
+			{
+				//Not copy or pasting
+				if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')))
+				{
+					//Append character
+					inputText += e.text.text;
+					renderText = true;
+				}
+			}
 		}
 		SDL_RenderClear(renderer);
 		//draw the objects
 		startScreen->Draw();
 		playButton->Draw();
 		quitButton->Draw();
+		//InputTextBox->Update(inputText.c_str());
+		//InputTextBox->Draw();
 
-		//if event is mouse butto ndown
+		//if event is mouse button down
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 		{
 			int MouseX, MouseY;
@@ -188,6 +216,23 @@ bool GameManager::Menu()
 				return true;
 			}
 		}
+
+		//if (renderText)
+		//{
+		//	//Text is not empty
+		//	if (inputText != "")
+		//	{
+		//		//Render new text
+		//		InputTextBox->Update(inputText.c_str());
+		//	}
+		//	//Text is empty
+		//	else
+		//	{
+		//		//Render space texture
+		//		InputTextBox->Update(" ");
+		//	}
+		//}
+
 		SDL_RenderPresent(renderer);
 	}
 	return false;
@@ -290,8 +335,8 @@ void GameManager::GameLoop()
 	//spawner initialization, unique because we will be recycling our spawner(don't want enemies spawning at the same time, yet)
 	auto spawner = std::make_unique<Spawner>(window, renderer, "assets/spawner1x8.png", 0, 0, 64, 64, 1, 8, spawningSpeed, false);
 	//create text for score , note: make_unique requires a constructor so i cant uniformly intialize the color or the string, using a hash-define instead.
-	auto scoreText = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", int(SCREEN_WIDTH / 8), 30, 256, 64, 64, std::string("Score:"), score_color);
 
+	auto scoreText = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", int(SCREEN_WIDTH / 8), 30, 256, 64, 64, std::string("Score:"), score_color);
 	//create our enemies, explosions and bullet vectors, note: vector of shared pointers because we will be pushing back temporary objects(ownership of objects will get transfered)
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	std::vector<std::shared_ptr<AnimationSprite>> explosionList;
@@ -323,10 +368,6 @@ void GameManager::GameLoop()
 			SDL_RenderClear(renderer);
 			background->Draw();
 			m_score++;
-			//HANDLE MOUSE
-			mouse->MouseLook(&e);
-			mouse->DrawLineMouseToSprite(player.get());
-			mouse->Draw();
 
 			//HANDLE SCORETEXT
 			std::stringstream scoreStringStream;
@@ -470,6 +511,11 @@ void GameManager::GameLoop()
 					exitFlag = true;
 				}
 			}
+			//HANDLE MOUSE
+			mouse->MouseLook(&e);
+			mouse->DrawLineMouseToSprite(player.get());
+			mouse->Draw();
+
 			if (enemyWaveComplete && enemies.empty()) //if all enemies have been spawned and the vector is empty
 			{
 				//game has been won
@@ -492,7 +538,9 @@ bool GameManager::MouseOverButton(SDL_Rect _button, int _mouseX, int _mouseY)
 		return true;
 	}
 	else
+	{
 		return false;
+	}
 }
 void GameManager::ToggleMusic(SDL_Event* _e)
 {
