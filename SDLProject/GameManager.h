@@ -37,6 +37,7 @@ private:
 	bool m_gameExitFlag;
 	bool m_winFlag;
 	int m_score;
+	int m_enemyCount = 15;
 
 	//sounds
 	Mix_Music* m_musicTrack = nullptr;
@@ -45,6 +46,7 @@ private:
 	Mix_Chunk* m_shootSFX = nullptr;
 
 public:
+	static int m_gamemode;
 	GameManager(int _screenWidth, int _screenHeight);
 	~GameManager();
 	bool InitializeSDL();
@@ -57,6 +59,12 @@ public:
 	void GameLoop();
 	bool MouseOverButton(SDL_Rect _button, const int _mouseX, const int _mouseY);
 	void ToggleMusic(SDL_Event* _e);
+	/* gamemode:
+	0 - survival
+	1 - time-trial
+	2 - training    */
+	void setGamemode(int _gamemode) { m_gamemode = _gamemode; }
+	int getGamemode() { return m_gamemode; }
 };
 
 #endif

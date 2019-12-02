@@ -8,6 +8,8 @@ Enemy::Enemy(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, in
 	m_currentWaypoint = 0;
 	m_step = 0.0f;
 	m_updateTimer = 0;
+	//m_enemyCount = 12;
+	//m_gamemode = 0;
 	//InitializeWaypoints(3);
 }
 
@@ -43,6 +45,11 @@ void Enemy::Update(int _smoothness, float _enemySpeed, int _screenWidth, int _sc
 		}
 	}
 	BoundToScreen(_screenWidth, _screenHeight);
+	//if (m_gamemode == 0)
+	//{
+	//	m_survivalTimer++;
+	//	if(m_survivalTimer >= )
+	//}
 }
 
 void Enemy::InitializeWaypoints(int waypointCount, int _screenWidth, int _screenHeight)

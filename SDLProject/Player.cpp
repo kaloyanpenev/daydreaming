@@ -2,7 +2,7 @@
 
 
 
-Player::Player(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalAnimRows, int _totalAnimColumns, int _animSpeed, int _moveSpeed) :
+Player::Player(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalAnimRows, int _totalAnimColumns, float _animSpeed, int _moveSpeed) :
 	AnimationSprite(_window, _renderer, _file, _x, _y, _w, _h, _totalAnimRows, _totalAnimColumns, _animSpeed, true), m_moveSpeed(_moveSpeed)
 {
 	m_shooting = false;
@@ -51,10 +51,10 @@ void Player::Draw(float angle)
 	}
 }
 
-void Player::HandleShooting(int _reloadTime)
+void Player::HandleShooting(float _reloadTime)
 {
 	m_reloadTimer++;
-	if (m_reloadTimer > _reloadTime)
+	if (m_reloadTimer >= _reloadTime)
 	{
 		if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_LMASK) //if left button is clicked and reloadtimer == reloadtime
 		{
@@ -74,7 +74,7 @@ void Player::ShootAnimation()
 	{
 		timer++;
 		//if time to proceed to next animation sprite is right
-		if (timer == speed)
+		if (timer == m_speed)
 		{
 			timer = 0;
 			currentColumn++; //go to next column

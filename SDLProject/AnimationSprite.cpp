@@ -2,7 +2,7 @@
 
 
 
-AnimationSprite::AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, int _speed, bool _loop) :
+AnimationSprite::AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, float _speed, bool _loop) :
 	Sprite(_window, _renderer, _file, _x, _y, _w, _h)
 {
 	currentRow = 0;
@@ -15,7 +15,7 @@ AnimationSprite::AnimationSprite(SDL_Window* _window, SDL_Renderer* _renderer, c
 	animRect.w = _w;
 	animRect.h = _h;
 
-	speed = _speed;
+	m_speed = _speed;
 	loop = _loop;
 	timer = 0;
 	canRestart = false;
@@ -31,7 +31,7 @@ void AnimationSprite::Animate()
 {
 	timer++;
 	//if time to proceed to next animation sprite is right
-	if (timer == speed)
+	if (timer >= m_speed)
 	{
 		timer = 0;
 		currentColumn++; //go to next column

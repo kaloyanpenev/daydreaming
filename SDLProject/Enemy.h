@@ -12,8 +12,12 @@ protected:
 	unsigned int m_currentWaypoint;
 	Vector2 m_currentPosition;
 	Vector2 m_resultPos;
+	//static int m_enemyCount;
+	//static int m_gamemode;
+	//static int m_difficulty;
+	
 
-
+	//int m_survivalTimer;
 	int m_updateTimer;
 	float m_step;
 public:

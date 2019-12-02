@@ -7,7 +7,7 @@ class Bullet :
 private:
 	Vector2 m_direction;
 	Vector2 m_start;
-	float m_angle;
+	float m_angle = 0;
 public:
 	Bullet(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h);
 	~Bullet();

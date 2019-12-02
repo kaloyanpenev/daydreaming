@@ -1,5 +1,8 @@
 #include "GameManager.h"
 
+int GameManager::m_gamemode = 0;
+
+
 GameManager::GameManager(int _screenWidth, int _screenHeight) :
 	SCREEN_WIDTH(_screenWidth),
 	SCREEN_HEIGHT(_screenHeight),
@@ -58,7 +61,7 @@ bool GameManager::InitializeSDL()
 	else
 	{
 		//create window
-		window = SDL_CreateWindow("daydreaming", 320, 160, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
+		window = SDL_CreateWindow("daydreaming", 320, 160, SCREEN_WIDTH, SCREEN_HEIGHT, NULL); //SDL_WINDOW_INPUT_GRABBED
 		if (window == NULL)
 		{
 			std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
@@ -147,17 +150,24 @@ bool GameManager::Menu()
 	auto playButton = std::make_unique<Sprite>(window, renderer, "assets/playbutton.png", SCREEN_WIDTH/2 - 256, SCREEN_HEIGHT/2 - 64, 512, 128);
 	auto quitButton = std::make_unique<Sprite>(window, renderer, "assets/quitbutton.png", playButton->getObject().x + 64, playButton->getObject().y + playButton->getObject().h + 32, 384, 96);
 
-	SDL_Color textColor = { 0, 0, 0, 0xFF };
-	std::string inputText = "Some Text";
-	auto InputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 20, 20, 50, 50, 16, inputText, textColor);
+	SDL_Color textColor = { 27, 27, 27, 0xFF };
+	std::string enemyInputText = "15";
 
-	InputTextBox->Update(inputText.c_str());
-
+	auto selectionCircle = std::make_unique<Sprite>(window, renderer, "assets/selectBubble.png", 196, 316, 155, 47);
+	auto enemiesExtension = std::make_unique<Sprite>(window, renderer, "assets/enemiesExtension.png", 150, 450, 304, 270);
+	enemiesExtension->setActive(false);
+	auto enemiesTextBox = std::make_unique<Sprite>(window, renderer, "assets/enemies-box.png", 420, 572, 85, 39);
+	auto spawnSpeedTextBox = std::make_unique<Sprite>(window, renderer, "assets/enemies-box.png", 420, 612, 85, 39);
+	auto enemyInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 572, 85, 39, 36, enemyInputText, textColor);
+	enemyInputTextBox->setActive(false);
+	//0, 72, 255
+	enemyInputTextBox->Update(enemyInputText.c_str());
 	//The current input text.
 
 	//Enable text input
-	SDL_StartTextInput();
-
+	bool inputtingEnemies = false;
+	bool inputtingSpawnSpeed = false;
+	SDL_StopTextInput();
 
 	SDL_Event e;
 	//exit flag
@@ -165,7 +175,7 @@ bool GameManager::Menu()
 	//menu loop, will run until the exit flag breaks it
 	while (!exitFlag)
 	{
-		bool renderText = false;
+		bool renderInputText = false;
 
 		//poll events
 		while (SDL_PollEvent(&e) != 0)
@@ -178,24 +188,42 @@ bool GameManager::Menu()
 			}
 			ToggleMusic(&e);
 
-			if (e.type == SDL_TEXTINPUT)
+			if (e.type == SDL_KEYDOWN)
 			{
-				//Not copy or pasting
-				if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')))
+				//Handle backspace
+				if (e.key.keysym.sym == SDLK_BACKSPACE && enemyInputText.length() > 0)
 				{
-					//Append character
-					inputText += e.text.text;
-					renderText = true;
+					//lop off character
+					enemyInputText.pop_back();
+					renderInputText = true;
 				}
 			}
+			else if (e.type == SDL_TEXTINPUT)
+			{
+				//Not copy or pasting
+				if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')) && inputtingEnemies)
+				{
+					//Append character
+					enemyInputText += e.text.text;
+					renderInputText = true;
+				}
+			}
+
 		}
 		SDL_RenderClear(renderer);
 		//draw the objects
 		startScreen->Draw();
 		playButton->Draw();
 		quitButton->Draw();
-		//InputTextBox->Update(inputText.c_str());
-		//InputTextBox->Draw();
+		if (enemiesExtension->getActive())
+		{
+			enemiesExtension->Draw();
+			enemiesTextBox->Draw();
+			spawnSpeedTextBox->Draw();
+		}
+		selectionCircle->Draw();
+
+
 
 		//if event is mouse button down
 		if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -215,23 +243,59 @@ bool GameManager::Menu()
 			{
 				return true;
 			}
+			//if mouse is over "survival" gamemode
+			if (MouseOverButton({ 196, 316, 135, 38 }, MouseX, MouseY))
+			{
+				m_gamemode = 0;
+				selectionCircle->setPosition(186, 316);
+				enemiesExtension->setActive(false);
+				SDL_StopTextInput();
+			}
+			//if mouse is over "time-trial" gamemode
+			if (MouseOverButton({ 196, 353, 135, 38 }, MouseX, MouseY))
+			{
+				m_gamemode = 1;
+				selectionCircle->setPosition(186, 353);
+				m_enemyCount = 15;
+				enemiesExtension->setActive(false);
+				SDL_StopTextInput();
+			}
+			//if mouse is over "training" gamemode
+			if (MouseOverButton({ 196, 390, 135, 38 }, MouseX, MouseY))
+			{
+				m_gamemode = 2;
+				selectionCircle->setPosition(186, 390);
+				enemyInputTextBox->setActive(true);
+				enemiesExtension->setActive(true);
+			}
+			//if mouse is over enemiestextbox and the enemies extension text is active
+			if (MouseOverButton(enemiesTextBox->getObject(), MouseX, MouseY) && enemiesExtension->getActive())
+			{
+				SDL_StartTextInput();
+				inputtingEnemies = true;
+			}
+
 		}
 
-		//if (renderText)
-		//{
-		//	//Text is not empty
-		//	if (inputText != "")
-		//	{
-		//		//Render new text
-		//		InputTextBox->Update(inputText.c_str());
-		//	}
-		//	//Text is empty
-		//	else
-		//	{
-		//		//Render space texture
-		//		InputTextBox->Update(" ");
-		//	}
-		//}
+		if (renderInputText)
+		{
+			//Text is not empty
+			if (enemyInputText != "")
+			{
+				//Render new text
+				enemyInputTextBox->Update(enemyInputText.c_str());
+			}
+			//Text is empty
+			else
+			{
+				//Render space texture
+				enemyInputTextBox->Update(" ");
+			}
+		}
+		if (enemyInputTextBox->getActive())
+		{
+			enemyInputTextBox->Draw();
+		}
 
 		SDL_RenderPresent(renderer);
 	}
@@ -310,13 +374,13 @@ void GameManager::RestartScreen()
 }
 void GameManager::GameLoop()
 {
-	int enemyCount = 12;
 	int currentSpawnPoint = 0;
 	int playerMS = 1;
-	int spawningSpeed = 5;
+	float spawningSpeed = 0.1f;
 	//flag to check if all enemies have been spawned
 	bool enemyWaveComplete = false;
 	SDL_Color score_color{ 25,25,255,250 };
+	m_enemyCount = 1523;
 
 
 	//using smart pointers to instantiate some of our game objects
@@ -329,11 +393,14 @@ void GameManager::GameLoop()
 	//create background object
 	auto background = std::make_unique<Sprite>(window, renderer, "assets/backgroundLight.png", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	//create player object
-	auto player = std::make_unique<Player>(window, renderer, "assets/shootAnim1x4.png", int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2), 64, 64, 1, 4, 2, playerMS);
+	auto player = std::make_unique<Player>(window, renderer, "assets/shootAnim1x4.png", int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2), 64, 64, 1, 4, 2.0f, playerMS);
 	//create mouse object
 	auto mouse = std::make_unique<Cursor>(window, renderer, "assets/xh.png", int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2), 16, 16);
 	//spawner initialization, unique because we will be recycling our spawner(don't want enemies spawning at the same time, yet)
 	auto spawner = std::make_unique<Spawner>(window, renderer, "assets/spawner1x8.png", 0, 0, 64, 64, 1, 8, spawningSpeed, false);
+	spawner->setSpawners(m_enemyCount + 1);
+
+
 	//create text for score , note: make_unique requires a constructor so i cant uniformly intialize the color or the string, using a hash-define instead.
 
 	auto scoreText = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", int(SCREEN_WIDTH / 8), 30, 256, 64, 64, std::string("Score:"), score_color);
@@ -341,6 +408,9 @@ void GameManager::GameLoop()
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	std::vector<std::shared_ptr<AnimationSprite>> explosionList;
 	std::vector<std::shared_ptr<Bullet>> bulletList;
+
+
+
 
 	//event tracker
 	SDL_Event e;
@@ -367,7 +437,11 @@ void GameManager::GameLoop()
 		{
 			SDL_RenderClear(renderer);
 			background->Draw();
-			m_score++;
+			if (m_gamemode == 0)
+			{
+				m_score++;
+				spawner->setSpeed((float)(5000 - m_score) / 1000);
+			}
 
 			//HANDLE SCORETEXT
 			std::stringstream scoreStringStream;
@@ -383,7 +457,7 @@ void GameManager::GameLoop()
 			}
 			if (!player->getShooting())
 			{
-				player->HandleShooting(30); //returns shooting if lmouse is clicked
+				player->HandleShooting(15); //returns shooting if lmouse is clicked RELOADTIME
 			}
 			player->ShootAnimation(); //handles shooting animation
 			float angleToMouse = mouse->AngleBetweenMouseAndRect(player->getObject());
@@ -418,19 +492,18 @@ void GameManager::GameLoop()
 				}
 				if ((*bullet_itr)->getActive())
 				{
-					(*bullet_itr)->Update(1000.0f * time->getDeltaTime()); //update bullet
+					(*bullet_itr)->Update(1500.0f * time->getDeltaTime()); //update bullet keywords: bulletspeed, bullet_speed, bulletSpeed, speedBullet
 					(*bullet_itr)->Draw();; //not shooting, so we set the boolean back to false
 				}
 				for (auto enemy_itr = enemies.begin(); enemy_itr != enemies.end();) // OUTER LOOP(for every bullet) checks against INNER LOOP(for every enemy)
 				{
 					if (SDL_HasIntersection(&(*bullet_itr)->getObject(), &(*enemy_itr)->getObject()))  //if there is an intersection between current bullet and current enemy
 					{
-						m_score += 300; //add 100 scorepoints
 						//save current enemy's position
 						SDL_Rect explosionObject = (*enemy_itr)->getObject();
 						//instantiate a temporary pointer to an explosion
 						std::shared_ptr<AnimationSprite> tempExplosion{
-							std::make_shared<AnimationSprite>(window, renderer, "assets/explosion1x8.png", explosionObject.x, explosionObject.y, explosionObject.w, explosionObject.h, 1, 8, 3, false)
+							std::make_shared<AnimationSprite>(window, renderer, "assets/explosion1x8.png", explosionObject.x, explosionObject.y, explosionObject.w, explosionObject.h, 1, 8, 3.0f, false)
 						};
 						//transfer ownership of explosion object to explosion vector
 						explosionList.push_back(tempExplosion);
@@ -454,7 +527,10 @@ void GameManager::GameLoop()
 				}
 
 			}
-			spawner->setSpawners(enemyCount + 1); //fill up spawnpoints vector
+			
+			spawner->setSpawners(m_enemyCount + 1); //fill up spawnpoints vector
+			//enemyCount++;
+			//spawner->addSpawnPoint();
 			spawner->setPosition(int(spawner->getSpawnPoint(currentSpawnPoint).x), int(spawner->getSpawnPoint(currentSpawnPoint).y));
 			spawner->Animate();
 			spawner->Draw();
@@ -478,7 +554,7 @@ void GameManager::GameLoop()
 				}
 			}
 			//HANDLE ENEMY SPAWNING
-			if (!spawner->getActive() && currentSpawnPoint < enemyCount) //if spawner is not active and current spawnpoint is less than the enemy count
+			if (!spawner->getActive() && currentSpawnPoint < m_enemyCount) //if spawner is not active and current spawnpoint is less than the enemy count
 			{
 				Mix_PlayChannel(-1, m_enemySFX, 0); //play sound effect
 				//instantiate a temporary pointer to an enemy object
@@ -491,7 +567,7 @@ void GameManager::GameLoop()
 				tempEnemy = nullptr; //destroy the link to the object so it can be deleted later on, this pointer will be deleted when it goes out of scope
 				currentSpawnPoint++;
 				spawner->setActive(true);
-				if (currentSpawnPoint == enemyCount)
+				if (currentSpawnPoint == m_enemyCount)
 				{
 					spawner->setActive(false);
 					enemyWaveComplete = true;

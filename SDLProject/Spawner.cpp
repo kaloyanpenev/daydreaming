@@ -2,12 +2,10 @@
 
 
 
-Spawner::Spawner(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, int _speed, bool _loop) :
+Spawner::Spawner(SDL_Window* _window, SDL_Renderer* _renderer, const char* _file, int _x, int _y, int _w, int _h, int _totalRows, int _totalColumns, float _speed, bool _loop) :
 	AnimationSprite(_window, _renderer, _file, _x, _y, _w, _h, _totalRows, _totalColumns, _speed, _loop)
 {
-	m_spawnTimer = 0;
 	m_spawning = true;
-	m_needSpawner = false;
 }
 
 
@@ -26,4 +24,8 @@ void Spawner::setSpawners(int _spawnerCount)
 		}
 		m_spawning = false;
 	}
+}
+void Spawner::addSpawnPoint()
+{
+	m_spawnPoints.push_back({ float(rand() % 1215), float(rand() % 655) });
 }
