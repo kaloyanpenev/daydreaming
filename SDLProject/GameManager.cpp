@@ -1,6 +1,6 @@
 #include "GameManager.h"
 
-int GameManager::m_gamemode = 0;
+int GameManager::m_gamemode = gameModes(Survival);
 
 
 GameManager::GameManager(int _screenWidth, int _screenHeight) :
@@ -100,6 +100,7 @@ bool GameManager::InitializeSDL()
 	LoadMusic();
 	Mix_PlayMusic(m_musicTrack, -1);
 	Mix_VolumeMusic(MIX_MAX_VOLUME / 4);
+	SDL_SetWindowGrab(window, SDL_TRUE);
 
 	return success;
 }
@@ -150,25 +151,21 @@ bool GameManager::Menu()
 	auto playButton = std::make_unique<Sprite>(window, renderer, "assets/playbutton.png", SCREEN_WIDTH/2 - 256, SCREEN_HEIGHT/2 - 64, 512, 128);
 	auto quitButton = std::make_unique<Sprite>(window, renderer, "assets/quitbutton.png", playButton->getObject().x + 64, playButton->getObject().y + playButton->getObject().h + 32, 384, 96);
 
-	SDL_Color textColor = { 27, 27, 27, 0xFF };
-	std::string enemyInputText = "15";
-	std::string spawnInputText = "0.1";
+	SDL_Color textColor = { 17, 17, 17, 0xFF };
 	auto selectionCircle = std::make_unique<Sprite>(window, renderer, "assets/selectBubble.png", 196, 316, 155, 47);
 	auto enemiesExtension = std::make_unique<Sprite>(window, renderer, "assets/enemiesExtension.png", 150, 450, 304, 270);
 	enemiesExtension->setActive(false);
 
 	auto enemiesTextBox = std::make_unique<Sprite>(window, renderer, "assets/enemies-box.png", 420, 572, 85, 39);
 	auto spawnSpeedTextBox = std::make_unique<Sprite>(window, renderer, "assets/enemies-box.png", 420, 612, 85, 39);
-	auto enemyInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 572, 85, 39, 36, enemyInputText, textColor);
+	auto enemyInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 572, 85, 39, 36, m_enemyCountString, textColor);
 	enemyInputTextBox->setActive(false);
-	auto spawnInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 610, 85, 39, 36, spawnInputText, textColor);
+	auto spawnInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 610, 85, 39, 36, m_spawnSpeedString, textColor);
 	
-	spawnInputTextBox->Update(spawnInputText);
-	//0, 72, 255
-	enemyInputTextBox->Update(enemyInputText.c_str());
-	//The current input text.
-
-	//Enable text input
+	spawnInputTextBox->Update(m_spawnSpeedString.c_str());
+	enemyInputTextBox->Update(m_enemyCountString.c_str());
+	selectionCircle->setActive(false);
+	m_gamemode = gameModes(Survival);
 	bool inputtingEnemies = false;
 	bool inputtingSpeed = false;
 	SDL_StopTextInput();
@@ -195,16 +192,16 @@ bool GameManager::Menu()
 			if (e.type == SDL_KEYDOWN)
 			{
 				//Handle backspace
-				if (e.key.keysym.sym == SDLK_BACKSPACE && enemyInputText.length() > 0 && inputtingEnemies)
+				if (e.key.keysym.sym == SDLK_BACKSPACE && m_enemyCountString.length() > 0 && inputtingEnemies)
 				{
 					//lop off character
-					enemyInputText.pop_back();
+					m_enemyCountString.pop_back();
 					renderInputText = true;
 				}
-				else if (e.key.keysym.sym == SDLK_BACKSPACE && spawnInputText.length() > 0 && inputtingSpeed) 
+				else if (e.key.keysym.sym == SDLK_BACKSPACE && m_spawnSpeedString.length() > 0 && inputtingSpeed) 
 				{
 					//lop off character
-					spawnInputText.pop_back();
+					m_spawnSpeedString.pop_back();
 					renderInputText = true;
 				}
 
@@ -215,13 +212,13 @@ bool GameManager::Menu()
 				if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')) && inputtingEnemies)
 				{
 					//Append character
-					enemyInputText += e.text.text;
+					m_enemyCountString += e.text.text;
 					renderInputText = true;
 				}
 				else if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')) && inputtingSpeed)
 				{
 					//Append character
-					spawnInputText += e.text.text;
+					m_spawnSpeedString += e.text.text;
 					renderInputText = true;
 				}
 			}
@@ -233,7 +230,8 @@ bool GameManager::Menu()
 		playButton->Draw();
 		quitButton->Draw();
 
-		selectionCircle->Draw();
+		if(selectionCircle->getActive())
+			selectionCircle->Draw();
 
 
 
@@ -258,7 +256,9 @@ bool GameManager::Menu()
 			//if mouse is over "survival" gamemode
 			if (MouseOverButton({ 196, 316, 135, 38 }, MouseX, MouseY))
 			{
-				m_gamemode = 0;
+				if(!selectionCircle->getActive())
+					selectionCircle->setActive(true);
+				m_gamemode = gameModes(Survival);
 				selectionCircle->setPosition(186, 316);
 				enemiesExtension->setActive(false);
 				SDL_StopTextInput();
@@ -266,7 +266,9 @@ bool GameManager::Menu()
 			//if mouse is over "time-trial" gamemode
 			if (MouseOverButton({ 196, 353, 135, 38 }, MouseX, MouseY))
 			{
-				m_gamemode = 1;
+				if (!selectionCircle->getActive())
+					selectionCircle->setActive(true);
+				m_gamemode = gameModes(Time_Trial);
 				selectionCircle->setPosition(186, 353);
 				m_enemyCount = 15;
 				enemiesExtension->setActive(false);
@@ -275,7 +277,9 @@ bool GameManager::Menu()
 			//if mouse is over "training" gamemode
 			if (MouseOverButton({ 196, 390, 135, 38 }, MouseX, MouseY))
 			{
-				m_gamemode = 2;
+				if (!selectionCircle->getActive())
+					selectionCircle->setActive(true);
+				m_gamemode = gameModes(Training);
 				selectionCircle->setPosition(186, 390);
 				enemyInputTextBox->setActive(true);
 				enemiesExtension->setActive(true);
@@ -299,10 +303,10 @@ bool GameManager::Menu()
 		if (renderInputText)
 		{
 			//Text is not empty
-			if (enemyInputText != "")
+			if (m_enemyCountString != "")
 			{
 				//Render new text
-				enemyInputTextBox->Update(enemyInputText.c_str());
+				enemyInputTextBox->Update(m_enemyCountString.c_str());
 			}
 			//Text is empty
 			else
@@ -311,10 +315,10 @@ bool GameManager::Menu()
 				enemyInputTextBox->Update(" ");
 			}
 			//Text is not empty
-			if (spawnInputText != "")
+			if (m_spawnSpeedString != "")
 			{
 				//Render new text
-				spawnInputTextBox->Update(spawnInputText.c_str());
+				spawnInputTextBox->Update(m_spawnSpeedString.c_str());
 			}
 			//Text is empty
 			else
@@ -355,13 +359,22 @@ void GameManager::RestartScreen()
 	}
 	auto quitButton = std::make_unique<Sprite>(window, renderer, "assets/quitbutton.png", mainButton->getObject().x + 64, mainButton->getObject().y + mainButton->getObject().h + 32, 384, 96);
 
-	SDL_Color score_color = { 50,50,50,150 };;
+	SDL_Color score_color{ 25,25,155,250 };
 	std::stringstream strstream;
 	strstream << "Score: ";
 	strstream << m_score;
 	std::string scoreResult = strstream.str();
-	auto scoreText = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", int(SCREEN_WIDTH / 8), 75, 256, 64, 96, scoreResult, score_color);
+	auto scoreText = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", int(SCREEN_WIDTH / 8), 75, 256, 64, 64, scoreResult, score_color);
+	
+	if (m_gamemode == Time_Trial)
+	{
 
+		scoreText->Update({ "Score: " + std::to_string((m_score / 60) % 60) + " seconds" });
+	}
+	else
+	{
+		scoreText->Update(scoreResult);
+	}
 	SDL_Event e;
 	//exit flag
 	bool exitFlag = false;
@@ -385,8 +398,8 @@ void GameManager::RestartScreen()
 		background->Draw();
 		mainButton->Draw();
 		quitButton->Draw();
-
 		scoreText->Draw();
+
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 		{
 			int MouseX, MouseY;
@@ -410,11 +423,24 @@ void GameManager::GameLoop()
 {
 	int currentSpawnPoint = 0;
 	int playerMS = 1;
-	float spawningSpeed = 0.1f;
+	float spawningSpeed = 6;
+	if (m_gamemode == Survival)
+	{
+		m_enemyCount = 1000;
+	}
+	else if (m_gamemode == Time_Trial)
+	{
+		m_enemyCount = 15;
+		spawningSpeed = 0.5f;
+	}
+	else if (m_gamemode == Training)
+	{
+		m_enemyCount = stoi(m_enemyCountString);
+		spawningSpeed = stof(m_spawnSpeedString) * 6;
+	}
 	//flag to check if all enemies have been spawned
 	bool enemyWaveComplete = false;
-	SDL_Color score_color{ 25,25,255,250 };
-	m_enemyCount = 1523;
+	SDL_Color score_color{ 25,25,155,250 };
 
 
 	//using smart pointers to instantiate some of our game objects
@@ -466,22 +492,42 @@ void GameManager::GameLoop()
 				m_restartFlag = false;
 			}
 			ToggleMusic(&e);
+			if (e.type == SDL_KEYDOWN)
+			{
+				//Handle backspace
+				if (e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					exitFlag = true;
+					m_restartFlag = true;
+				}
+			}
 		}
 		if (time->getDeltaTime() >= 1.0f / FRAME_RATE) //limit framerate
 		{
 			SDL_RenderClear(renderer);
 			background->Draw();
-			if (m_gamemode == 0)
+			if (m_gamemode == gameModes(Survival))
 			{
 				m_score++;
 				spawner->setSpeed((float)(5000 - m_score) / 1000);
+			}
+			else if (m_gamemode == gameModes(Time_Trial))
+			{
+				m_score++;
 			}
 
 			//HANDLE SCORETEXT
 			std::stringstream scoreStringStream;
 			scoreStringStream << m_score;
 			std::string currentScore = scoreStringStream.str();
-			scoreText->Update({ "Score: " + currentScore });
+			if (m_gamemode == gameModes(Survival))
+			{
+				scoreText->Update({ "Score: " + currentScore });
+			}
+			else if (m_gamemode == gameModes(Time_Trial))
+			{
+				scoreText->Update({ "Score: " + std::to_string((stoi(currentScore) / 60) % 60) + 's'});
+			}
 			scoreText->Draw();
 
 			//HANDLE PLAYER INTERACTION
@@ -561,10 +607,8 @@ void GameManager::GameLoop()
 				}
 
 			}
-			
-			spawner->setSpawners(m_enemyCount + 1); //fill up spawnpoints vector
-			//enemyCount++;
-			//spawner->addSpawnPoint();
+
+			spawner->setSpawners(m_enemyCount); //fill up spawnpoints vector
 			spawner->setPosition(int(spawner->getSpawnPoint(currentSpawnPoint).x), int(spawner->getSpawnPoint(currentSpawnPoint).y));
 			spawner->Animate();
 			spawner->Draw();
@@ -595,7 +639,7 @@ void GameManager::GameLoop()
 				std::shared_ptr<Enemy> tempEnemy{
 					std::make_shared<Enemy>(window, renderer, "assets/enemy.png", int(spawner->getSpawnPoint(currentSpawnPoint).x), int(spawner->getSpawnPoint(currentSpawnPoint).y), 64, 64)
 				};
-				tempEnemy->InitializeWaypoints(3, SCREEN_WIDTH, SCREEN_HEIGHT);	// parameter 1 - how big our waypoints vector is(how many we have access to)
+				tempEnemy->InitializeWaypoints(3, SCREEN_WIDTH, SCREEN_HEIGHT);	// parameter 1 - how many points it will move to
 				enemies.push_back(tempEnemy);	// transfer ownership of enemy object to enemy vector
 				//pointer to object is now stored in the container, however tempEnemy is still valid so we have to take care of it
 				tempEnemy = nullptr; //destroy the link to the object so it can be deleted later on, this pointer will be deleted when it goes out of scope

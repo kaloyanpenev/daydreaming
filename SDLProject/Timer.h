@@ -16,11 +16,15 @@ private:
 	unsigned int m_elapsedTicks;
 	float m_deltaTime;
 	float m_timeScale;
+	float m_timeRunning = true;
 public:
 	Timer();
 	~Timer();
 	void reset();
 	inline float getDeltaTime() const { return m_deltaTime; }
+	inline void setDeltaTime(float _time) { m_deltaTime = _time; }
+	inline void setTimeRunning(bool _running) { m_timeRunning = _running; }
+	inline bool getTimeRunning() const { return m_timeRunning; }
 	void Update();
 };
 

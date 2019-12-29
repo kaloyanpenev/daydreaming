@@ -37,7 +37,10 @@ private:
 	bool m_gameExitFlag;
 	bool m_winFlag;
 	int m_score;
-	int m_enemyCount = 15;
+	std::string m_enemyCountString = "15";
+	std::string m_spawnSpeedString = "0.1";
+	int m_enemyCount;
+	float m_spawnSpeed;
 
 	//sounds
 	Mix_Music* m_musicTrack = nullptr;
@@ -47,6 +50,7 @@ private:
 
 public:
 	static int m_gamemode;
+	enum gameModes { Survival = 0, Time_Trial = 1, Training = 2 };
 	GameManager(int _screenWidth, int _screenHeight);
 	~GameManager();
 	bool InitializeSDL();
