@@ -152,21 +152,25 @@ bool GameManager::Menu()
 
 	SDL_Color textColor = { 27, 27, 27, 0xFF };
 	std::string enemyInputText = "15";
-
+	std::string spawnInputText = "0.1";
 	auto selectionCircle = std::make_unique<Sprite>(window, renderer, "assets/selectBubble.png", 196, 316, 155, 47);
 	auto enemiesExtension = std::make_unique<Sprite>(window, renderer, "assets/enemiesExtension.png", 150, 450, 304, 270);
 	enemiesExtension->setActive(false);
+
 	auto enemiesTextBox = std::make_unique<Sprite>(window, renderer, "assets/enemies-box.png", 420, 572, 85, 39);
 	auto spawnSpeedTextBox = std::make_unique<Sprite>(window, renderer, "assets/enemies-box.png", 420, 612, 85, 39);
 	auto enemyInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 572, 85, 39, 36, enemyInputText, textColor);
 	enemyInputTextBox->setActive(false);
+	auto spawnInputTextBox = std::make_unique<TextSprite>(window, renderer, "assets/IndieFlower.ttf", 430, 610, 85, 39, 36, spawnInputText, textColor);
+	
+	spawnInputTextBox->Update(spawnInputText);
 	//0, 72, 255
 	enemyInputTextBox->Update(enemyInputText.c_str());
 	//The current input text.
 
 	//Enable text input
 	bool inputtingEnemies = false;
-	bool inputtingSpawnSpeed = false;
+	bool inputtingSpeed = false;
 	SDL_StopTextInput();
 
 	SDL_Event e;
@@ -191,12 +195,19 @@ bool GameManager::Menu()
 			if (e.type == SDL_KEYDOWN)
 			{
 				//Handle backspace
-				if (e.key.keysym.sym == SDLK_BACKSPACE && enemyInputText.length() > 0)
+				if (e.key.keysym.sym == SDLK_BACKSPACE && enemyInputText.length() > 0 && inputtingEnemies)
 				{
 					//lop off character
 					enemyInputText.pop_back();
 					renderInputText = true;
 				}
+				else if (e.key.keysym.sym == SDLK_BACKSPACE && spawnInputText.length() > 0 && inputtingSpeed) 
+				{
+					//lop off character
+					spawnInputText.pop_back();
+					renderInputText = true;
+				}
+
 			}
 			else if (e.type == SDL_TEXTINPUT)
 			{
@@ -207,6 +218,12 @@ bool GameManager::Menu()
 					enemyInputText += e.text.text;
 					renderInputText = true;
 				}
+				else if (!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')) && inputtingSpeed)
+				{
+					//Append character
+					spawnInputText += e.text.text;
+					renderInputText = true;
+				}
 			}
 
 		}
@@ -215,12 +232,7 @@ bool GameManager::Menu()
 		startScreen->Draw();
 		playButton->Draw();
 		quitButton->Draw();
-		if (enemiesExtension->getActive())
-		{
-			enemiesExtension->Draw();
-			enemiesTextBox->Draw();
-			spawnSpeedTextBox->Draw();
-		}
+
 		selectionCircle->Draw();
 
 
@@ -273,6 +285,13 @@ bool GameManager::Menu()
 			{
 				SDL_StartTextInput();
 				inputtingEnemies = true;
+				inputtingSpeed = false;
+			}
+			if (MouseOverButton(spawnSpeedTextBox->getObject(), MouseX, MouseY) && enemiesExtension->getActive())
+			{
+				SDL_StartTextInput();
+				inputtingEnemies = false;
+				inputtingSpeed = true;
 			}
 
 		}
@@ -291,12 +310,27 @@ bool GameManager::Menu()
 				//Render space texture
 				enemyInputTextBox->Update(" ");
 			}
+			//Text is not empty
+			if (spawnInputText != "")
+			{
+				//Render new text
+				spawnInputTextBox->Update(spawnInputText.c_str());
+			}
+			//Text is empty
+			else
+			{
+				//Render space texture
+				spawnInputTextBox->Update(" ");
+			}
 		}
-		if (enemyInputTextBox->getActive())
+		if (enemiesExtension->getActive())
 		{
+			enemiesExtension->Draw();
+			enemiesTextBox->Draw();
+			spawnSpeedTextBox->Draw();
 			enemyInputTextBox->Draw();
+			spawnInputTextBox->Draw();
 		}
-
 		SDL_RenderPresent(renderer);
 	}
 	return false;
