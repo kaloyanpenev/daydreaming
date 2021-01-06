@@ -3,7 +3,12 @@ for Bournemouth University
 BSc Games Software Engineering
 Object Oriented Programming CW2
 
-1.Build this project:
+**To play**
+There is an .exe in the /bin folder.
+
+
+
+**To Re-build**
 - in C++14 or above.
 AND
 - in x86 mode.
