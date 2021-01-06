@@ -3,21 +3,12 @@ for Bournemouth University
 BSc Games Software Engineering
 Object Oriented Programming CW2
 
-**HOW TO PLAY**
-1. Download or clone the project.
-2. Open file "daydreaming.exe" in the "Release/" folder.
-
-
-
-
-
-
 1.Build this project:
 - in C++14 or above.
 AND
 - in x86 mode.
 
-To rebuild:
+If issues arise:
 1. Check that you have the SDL folder in the solution directory
 2. Check that you have the SDL binary files (.dll) correctly placed in the project folder.
 3. Check that the project settings are correctly set to:
