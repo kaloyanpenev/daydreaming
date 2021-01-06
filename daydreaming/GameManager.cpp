@@ -61,7 +61,7 @@ bool GameManager::InitializeSDL()
 	else
 	{
 		//create window
-		window = SDL_CreateWindow("daydreaming", 320, 160, SCREEN_WIDTH, SCREEN_HEIGHT, NULL); //SDL_WINDOW_INPUT_GRABBED
+		window = SDL_CreateWindow("daydreaming", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, NULL); //SDL_WINDOW_INPUT_GRABBED
 		if (window == NULL)
 		{
 			std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
