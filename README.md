@@ -1,11 +1,6 @@
-This game was created by Kaloyan Penev
-for Bournemouth University
-BSc Games Software Engineering
-Object Oriented Programming CW2
-
 **To play**
 There is an .exe in the /bin folder.
-
+Enjoy!
 
 
 **To Re-build**
