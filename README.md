@@ -14,11 +14,11 @@ If issues arise:
 3. Check that the project settings are correctly set to:
 
 -VC++ Directories:
-	Include directories: $(SolutionDir)SDL\include;$(IncludePath)
-	Library directories: $(SolutionDir)SDL\lib\x86;$(LibraryPath)
+	Include directories: `$(SolutionDir)SDL\include;$(IncludePath)`
+	Library directories: `$(SolutionDir)SDL\lib\x86;$(LibraryPath)`
 
 -Linker
 	-Linker Input
-		Additional Dependencies: SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)
+		Additional Dependencies: `SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)`
 	-System
-		SubSystem: Console
+		SubSystem: `Console`
